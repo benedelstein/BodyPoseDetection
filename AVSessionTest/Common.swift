@@ -7,13 +7,14 @@
 import UIKit
 import Vision
 
-let jointsOfInterest: [VNRecognizedPointKey] = [
-    .bodyLandmarkKeyRightWrist,
-    .bodyLandmarkKeyRightElbow,
-    .bodyLandmarkKeyRightShoulder,
-    .bodyLandmarkKeyRightHip,
-    .bodyLandmarkKeyRightKnee,
-    .bodyLandmarkKeyRightAnkle
+// change these to draw points for whatever body parts you want
+let jointsOfInterest: [VNHumanBodyPoseObservation.JointName] = [
+    .nose,
+    .rightElbow,
+    .rightShoulder,
+    .rightHip,
+    .rightKnee,
+    .rightAnkle
 ]
 
 // takes an observation of joints with location and confidence
@@ -27,9 +28,6 @@ func getBodyJointsFor(observation: VNRecognizedPointsObservation) -> ([String: C
     for (key, point) in identifiedPoints {
         guard point.confidence > 0.1 else { continue } // filter out low confidence
         joints[key.rawValue] = point.location
-//        if jointsOfInterest.contains(key) { // if this is one of the joints we care about (wrist, elbow, etc) (right side of body)
-//            joints[key.rawValue] = point.location
-//        }
     }
     return joints
 }

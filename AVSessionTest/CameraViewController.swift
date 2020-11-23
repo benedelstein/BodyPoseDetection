@@ -9,18 +9,11 @@ import UIKit
 import AVFoundation
 import Vision
 
-// delegate receives camera frames and processes them
-// this delegate will be set to different VCs based on different tasks that need to be done (pose detection, object detection, etc)
-protocol CameraViewControllerOutputDelegate: class {
-    func cameraViewController(_ controller: CameraViewController, didReceiveBuffer buffer: CMSampleBuffer, orientation: CGImagePropertyOrientation)
-}
-
-class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
-    weak var outputDelegate: CameraViewControllerOutputDelegate?
+class CameraViewController: UIViewController {
+//    weak var outputDelegate: CameraViewControllerOutputDelegate?
     
-    @IBOutlet weak var previewView: UIView!
     var previewLayer: AVCaptureVideoPreviewLayer! = nil // displays the camera output frames on the view
-    var bufferSize: CGSize = .zero
+    var bufferSize: CGSize = .zero // size of the video buffer
     private let session = AVCaptureSession()
     private let videoDataOutput = AVCaptureVideoDataOutput() // provides access to frames for processing
     
@@ -32,13 +25,16 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         setupAVCapture()
     }
     
+    // configures the app to process video frames
     func setupAVCapture() {
         var deviceInput: AVCaptureDeviceInput!
         
+        // first look for cameras to get input from (should find your phone's default camera)
         guard let videoDevice = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .back).devices.first else {
             print("could not find wide angle camera device")
             return
         }
+        // try to create a device input with this camera device
         do {
             deviceInput = try AVCaptureDeviceInput(device: videoDevice)
         } catch {
@@ -46,7 +42,8 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             return
         }
         
-        session.beginConfiguration()
+        session.beginConfiguration() // declare start of atomic session config changes
+        
         // set resolution based on minimum amount greater than ml model needs
         if videoDevice.supportsSessionPreset(.hd1920x1080) {
             session.sessionPreset = .hd1920x1080
@@ -66,8 +63,8 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             videoDataOutput.alwaysDiscardsLateVideoFrames = true
             videoDataOutput.videoSettings = [
                 String(kCVPixelBufferPixelFormatTypeKey): Int(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
-            ]
-            videoDataOutput.setSampleBufferDelegate(self, queue: videoDataOutputQueue)
+            ] // output compression settings
+            videoDataOutput.setSampleBufferDelegate(self, queue: videoDataOutputQueue) // set delegate to self for receiving buffer frames
         } else {
             print("couldn't add video data output to session")
             session.commitConfiguration()
@@ -85,14 +82,14 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             print("\(error.localizedDescription)")
         }
         session.commitConfiguration()
-        previewLayer = AVCaptureVideoPreviewLayer(session: session)
-        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        previewLayer.frame = view.bounds
+        previewLayer = AVCaptureVideoPreviewLayer(session: session) // displays video as it's captured
+        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill // video will fill the layer
+        previewLayer.frame = view.bounds // fill the whole view
         view.layer.addSublayer(previewLayer)
     }
     
     func startCaptureSession() {
-        session.startRunning()
+        session.startRunning() // begins the flow of data from camera inputs to outputs
     }
     
     // MARK: - COORDINATE CONVERSION
@@ -104,16 +101,25 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         viewRect = previewLayer.layerRectConverted(fromMetadataOutputRect: flippedRect)
         return viewRect
     }
-    
-    // MARK: - video capture output delegate
+}
+
+// MARK: - video capture output delegate
+extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    // override this in a child class
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         // process frames
-        outputDelegate?.cameraViewController(self, didReceiveBuffer: sampleBuffer, orientation: .up)
+//        outputDelegate?.cameraViewController(self, didReceiveBuffer: sampleBuffer, orientation: .up)
     }
     
     func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
 //        print("frame dropped")
     }
 
+}
+
+// delegate receives camera frames and processes them
+// this delegate will be set to different VCs based on different tasks that need to be done (pose detection, object detection, etc)
+protocol CameraViewControllerOutputDelegate: class {
+    func cameraViewController(_ controller: CameraViewController, didReceiveBuffer buffer: CMSampleBuffer, orientation: CGImagePropertyOrientation)
 }
 
