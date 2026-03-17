@@ -20,10 +20,10 @@ import Vision
 @available(iOS 14.0, *)
 class BodyPoseViewController: CameraViewController {
 
-    private var poseOverlay: CALayer! = nil
+    private var poseOverlay: CALayer?
     private var requests = [VNRequest]() // array of vision requests to process
     private let bodyPoseDetectionMinConfidence: VNConfidence = 0.6
-    private let bodyPoseRecognizedPointMinConfidence: VNConfidence = 0.1 // why is this so low?
+    private let bodyPoseRecognizedPointMinConfidence: VNConfidence = 0.1
     
     override func viewDidLoad() {
         super.viewDidLoad() // sets up the AVSession
@@ -31,49 +31,55 @@ class BodyPoseViewController: CameraViewController {
         setupVision() // register detect body pose request
         startCaptureSession()
     }
-    
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateLayerGeometry()
+    }
+
     /// setup method to be able to display body points later on
     func setupLayers() {
-        poseOverlay = CALayer() // container layer that has all the renderings of the observations
-        poseOverlay.name = "PoseOverlay"
-        print(bufferSize)
-        poseOverlay.bounds = CGRect(x: 0.0,
-                                    y: 0.0,
-                                    width: bufferSize.width,
-                                    height: bufferSize.height) // set the layer to cover the whole video buffer size
-//        poseOverlay.position = CGPoint(x: previewLayer.bounds.midX, y: previewLayer.bounds.midY)
-        view.layer.insertSublayer(poseOverlay, above: previewLayer) // insert this on top of the camera layer
+        let overlay = CALayer() // container layer that has all the renderings of the observations
+        overlay.name = "PoseOverlay"
+        overlay.bounds = CGRect(x: 0.0,
+                                y: 0.0,
+                                width: bufferSize.width,
+                                height: bufferSize.height) // set the layer to cover the whole video buffer size
+        if let previewLayer = previewLayer {
+            view.layer.insertSublayer(overlay, above: previewLayer) // insert this on top of the camera layer
+        } else {
+            view.layer.addSublayer(overlay)
+        }
+        poseOverlay = overlay
     }
     
     /// register detect body pose request
     func setupVision() {
         // declare the request with a callback when its done
-        let poseRequest = VNDetectHumanBodyPoseRequest { (request, error) in
+        let poseRequest = VNDetectHumanBodyPoseRequest { [weak self] (request, error) in
             guard error == nil else {
                 print(error!.localizedDescription)
                 return
             }
-            DispatchQueue.main.async { // update UI on main thread
+            DispatchQueue.main.async {
+                guard let self = self else { return }
                 if let results = request.results {
                     self.handleVisionResults(results) // parse out body parts
                 }
             }
-
         }
-        // poseRequest.regionOfInterest = CGRect(x: 0, y: 0, width: 1, height: 1)
-        // setting a normalized region of interest gives better results
-        // BUT we would need to update this every frame, not just at setup, bc person can move in frame
         self.requests = [poseRequest]
     }
     
     /// processes the results from a body pose detection request
     func handleVisionResults(_ results: [Any]) {
-        guard let observations = results as? [VNRecognizedPointsObservation] else {return}
-        
+        guard let observations = results as? [VNHumanBodyPoseObservation],
+              let poseOverlay = poseOverlay else { return }
+
         CATransaction.begin() // update UI atomically
         CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
         poseOverlay.sublayers = nil // remove all the old recognized objects
-        
+
         // 1 observation = 1 body. Process each body in the frame.
         for observation in observations {
             let boundingBox = self.humanBoundingBox(for: observation)
@@ -84,17 +90,18 @@ class BodyPoseViewController: CameraViewController {
             poseOverlay.addSublayer(boxLayer)
             poseOverlay.addSublayer(jointsLayer)
         }
-        
+
         self.updateLayerGeometry()
         CATransaction.commit()
     }
     
     /// creates a normalized bounding box enclosing a person
-    func humanBoundingBox(for observation: VNRecognizedPointsObservation) -> CGRect {
+    func humanBoundingBox(for observation: VNHumanBodyPoseObservation) -> CGRect {
         var box = CGRect.zero
         var normalizedBoundingBox = CGRect.null
         // Process body points only if the confidence is high.
-        guard observation.confidence > bodyPoseDetectionMinConfidence, var points = try? observation.recognizedPoints(forGroupKey: .all) else {
+        guard observation.confidence > bodyPoseDetectionMinConfidence,
+              var points = try? observation.recognizedPoints(.all) else {
             return box
         }
         points = points.filter { (key, point) in
@@ -113,29 +120,25 @@ class BodyPoseViewController: CameraViewController {
     }
     
     func updateLayerGeometry() {
+        guard let previewLayer = previewLayer,
+              let poseOverlay = poseOverlay else { return }
         let bounds = previewLayer.bounds
-        var scale: CGFloat
-        
+
+        guard bufferSize.width > 0, bufferSize.height > 0 else { return }
+
         let xScale: CGFloat = bounds.size.width / bufferSize.height
         let yScale: CGFloat = bounds.size.height / bufferSize.width
-        
-        scale = fmax(xScale, yScale)
-        if scale.isInfinite {
-            scale = 1.0
-        }
-        // i'm not sure what this scaling does
-        print(xScale,yScale)
+        let scale = fmax(xScale, yScale)
+
         CATransaction.begin()
         CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-        
-        // we need to do some manipulation to get the UI to show up correctly
+
         // rotate the layer 90 degrees into screen orientation and scale and mirror
         poseOverlay.setAffineTransform(CGAffineTransform(rotationAngle: CGFloat(.pi / 2.0)).scaledBy(x: scale, y: -scale))
         // center the layer
         poseOverlay.position = CGPoint(x: bounds.midX, y: bounds.midY)
-        
+
         CATransaction.commit()
-        
     }
     
     /// creates a CALayer bounding box from a CGRect enclosing a person
@@ -152,8 +155,8 @@ class BodyPoseViewController: CameraViewController {
     func drawJoints(_ joints: [String: CGPoint]) -> CAShapeLayer {
         var imagePoints: [CGPoint] = []
         for (joint, location) in joints {
-            // only pick the joints of interest
-            if jointsOfInterest.contains(VNHumanBodyPoseObservation.JointName(rawValue: VNRecognizedPointKey(rawValue: joint))) {
+            let jointName = VNHumanBodyPoseObservation.JointName(rawValue: VNRecognizedPointKey(rawValue: joint))
+            if jointsOfInterest.contains(jointName) {
                 let imagePoint = VNImagePointForNormalizedPoint(location, Int(bufferSize.width), Int(bufferSize.height)) // scale coordinate to image coordinate system
                 imagePoints.append(imagePoint)
             }

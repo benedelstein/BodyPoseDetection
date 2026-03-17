@@ -19,20 +19,15 @@ let jointsOfInterest: [VNHumanBodyPoseObservation.JointName] = [
 
 // takes an observation of joints with location and confidence
 // returns a dict of points with just their location
-/// identified points: [VNRecognizedPointKey: VNRecognizedPoint]
-func getBodyJointsFor(observation: VNRecognizedPointsObservation) -> ([String: CGPoint]) {
+@available(iOS 14.0, *)
+func getBodyJointsFor(observation: VNHumanBodyPoseObservation) -> ([String: CGPoint]) {
     var joints = [String: CGPoint]()
-    guard let identifiedPoints = try? observation.recognizedPoints(forGroupKey: .all) else {
+    guard let identifiedPoints = try? observation.recognizedPoints(.all) else {
         return joints
     }
     for (key, point) in identifiedPoints {
         guard point.confidence > 0.1 else { continue } // filter out low confidence
-        joints[key.rawValue] = point.location
+        joints[key.rawValue.rawValue] = point.location
     }
     return joints
-}
-
-
-extension CGAffineTransform {
-    static var verticalFlip = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -1)
 }
