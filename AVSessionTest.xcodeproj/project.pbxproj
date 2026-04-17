@@ -15,7 +15,20 @@
 		560115D724AEBC85004CE070 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 560115D524AEBC85004CE070 /* LaunchScreen.storyboard */; };
 		560FA6CD24B136880020001B /* BodyPoseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA6CC24B136880020001B /* BodyPoseViewController.swift */; };
 		560FA6CF24B2528B0020001B /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA6CE24B2528B0020001B /* Common.swift */; };
+		AA0001011000000000000001 /* CommonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001021000000000000001 /* CommonTests.swift */; };
+		AA0001011000000000000002 /* BodyPoseViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001021000000000000002 /* BodyPoseViewControllerTests.swift */; };
+		AA0001011000000000000003 /* CameraViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001021000000000000003 /* CameraViewControllerTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AA0001031000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 560115BF24AEBC83004CE070 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 560115C624AEBC83004CE070;
+			remoteInfo = AVSessionTest;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		560115C724AEBC83004CE070 /* AVSessionTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVSessionTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -28,10 +41,22 @@
 		560115D824AEBC85004CE070 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		560FA6CC24B136880020001B /* BodyPoseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPoseViewController.swift; sourceTree = "<group>"; };
 		560FA6CE24B2528B0020001B /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		AA0001041000000000000001 /* AVSessionTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AVSessionTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0001021000000000000001 /* CommonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTests.swift; sourceTree = "<group>"; };
+		AA0001021000000000000002 /* BodyPoseViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPoseViewControllerTests.swift; sourceTree = "<group>"; };
+		AA0001021000000000000003 /* CameraViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewControllerTests.swift; sourceTree = "<group>"; };
+		AA0001021000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		560115C424AEBC83004CE070 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0001051000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -45,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				560115C924AEBC83004CE070 /* AVSessionTest */,
+				AA0001061000000000000001 /* AVSessionTestTests */,
 				560115C824AEBC83004CE070 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,6 +79,7 @@
 			isa = PBXGroup;
 			children = (
 				560115C724AEBC83004CE070 /* AVSessionTest.app */,
+				AA0001041000000000000001 /* AVSessionTestTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -71,6 +98,17 @@
 				560115D824AEBC85004CE070 /* Info.plist */,
 			);
 			path = AVSessionTest;
+			sourceTree = "<group>";
+		};
+		AA0001061000000000000001 /* AVSessionTestTests */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001021000000000000001 /* CommonTests.swift */,
+				AA0001021000000000000002 /* BodyPoseViewControllerTests.swift */,
+				AA0001021000000000000003 /* CameraViewControllerTests.swift */,
+				AA0001021000000000000004 /* Info.plist */,
+			);
+			path = AVSessionTestTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -93,6 +131,24 @@
 			productReference = 560115C724AEBC83004CE070 /* AVSessionTest.app */;
 			productType = "com.apple.product-type.application";
 		};
+		AA0001071000000000000001 /* AVSessionTestTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0001081000000000000001 /* Build configuration list for PBXNativeTarget "AVSessionTestTests" */;
+			buildPhases = (
+				AA0001091000000000000001 /* Sources */,
+				AA0001051000000000000001 /* Frameworks */,
+				AA00010A1000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA00010B1000000000000001 /* PBXTargetDependency */,
+			);
+			name = AVSessionTestTests;
+			productName = AVSessionTestTests;
+			productReference = AA0001041000000000000001 /* AVSessionTestTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -104,6 +160,10 @@
 				TargetAttributes = {
 					560115C624AEBC83004CE070 = {
 						CreatedOnToolsVersion = 12.0;
+					};
+					AA0001071000000000000001 = {
+						CreatedOnToolsVersion = 12.0;
+						TestTargetID = 560115C624AEBC83004CE070;
 					};
 				};
 			};
@@ -121,6 +181,7 @@
 			projectRoot = "";
 			targets = (
 				560115C624AEBC83004CE070 /* AVSessionTest */,
+				AA0001071000000000000001 /* AVSessionTestTests */,
 			);
 		};
 /* End PBXProject section */
@@ -133,6 +194,13 @@
 				560115D724AEBC85004CE070 /* LaunchScreen.storyboard in Resources */,
 				560115D424AEBC85004CE070 /* Assets.xcassets in Resources */,
 				560115D224AEBC83004CE070 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA00010A1000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,7 +219,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA0001091000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0001011000000000000001 /* CommonTests.swift in Sources */,
+				AA0001011000000000000002 /* BodyPoseViewControllerTests.swift in Sources */,
+				AA0001011000000000000003 /* CameraViewControllerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA00010B1000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 560115C624AEBC83004CE070 /* AVSessionTest */;
+			targetProxy = AA0001031000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		560115D024AEBC83004CE070 /* Main.storyboard */ = {
@@ -329,6 +415,48 @@
 			};
 			name = Release;
 		};
+		AA00010C1000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4ZJWAQAQHL;
+				INFOPLIST_FILE = AVSessionTestTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bedelstein.AVSessionTestTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AVSessionTest.app/AVSessionTest";
+			};
+			name = Debug;
+		};
+		AA00010C1000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4ZJWAQAQHL;
+				INFOPLIST_FILE = AVSessionTestTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bedelstein.AVSessionTestTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AVSessionTest.app/AVSessionTest";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -346,6 +474,15 @@
 			buildConfigurations = (
 				560115DC24AEBC85004CE070 /* Debug */,
 				560115DD24AEBC85004CE070 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0001081000000000000001 /* Build configuration list for PBXNativeTarget "AVSessionTestTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA00010C1000000000000001 /* Debug */,
+				AA00010C1000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
