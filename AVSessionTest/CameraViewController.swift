@@ -10,14 +10,13 @@ import AVFoundation
 import Vision
 
 class CameraViewController: UIViewController {
-//    weak var outputDelegate: CameraViewControllerOutputDelegate?
-    
-    var previewLayer: AVCaptureVideoPreviewLayer! = nil // displays the camera output frames on the view
+
+    var previewLayer: AVCaptureVideoPreviewLayer?
     var bufferSize: CGSize = .zero // size of the video buffer
-    private let session = AVCaptureSession()
+    let session = AVCaptureSession()
     private let videoDataOutput = AVCaptureVideoDataOutput() // provides access to frames for processing
-    
-    private let videoDataOutputQueue = DispatchQueue(label: "VideoDataOutput", qos: .userInitiated, attributes: [], autoreleaseFrequency: .workItem) // queue for processing video data
+
+    let videoDataOutputQueue = DispatchQueue(label: "VideoDataOutput", qos: .userInitiated, attributes: [], autoreleaseFrequency: .workItem) // queue for processing video data
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,25 +81,24 @@ class CameraViewController: UIViewController {
             print("\(error.localizedDescription)")
         }
         session.commitConfiguration()
-        previewLayer = AVCaptureVideoPreviewLayer(session: session) // displays video as it's captured
-        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill // video will fill the layer
-        previewLayer.frame = view.bounds // fill the whole view
-        view.layer.addSublayer(previewLayer)
+        let preview = AVCaptureVideoPreviewLayer(session: session) // displays video as it's captured
+        preview.videoGravity = AVLayerVideoGravity.resizeAspectFill // video will fill the layer
+        preview.frame = view.bounds // fill the whole view
+        view.layer.addSublayer(preview)
+        previewLayer = preview
     }
-    
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer?.frame = view.bounds
+    }
+
     func startCaptureSession() {
-        session.startRunning() // begins the flow of data from camera inputs to outputs
+        videoDataOutputQueue.async { [weak self] in
+            self?.session.startRunning() // begins the flow of data from camera inputs to outputs
+        }
     }
     
-    // MARK: - COORDINATE CONVERSION
-    
-    /// converts normalized coords. vision rect to UIKit rect coordinates
-    func viewRectForVisionRect(_ visionRect: CGRect) -> CGRect {
-        let flippedRect = visionRect.applying(CGAffineTransform.verticalFlip)
-        let viewRect: CGRect
-        viewRect = previewLayer.layerRectConverted(fromMetadataOutputRect: flippedRect)
-        return viewRect
-    }
 }
 
 // MARK: - video capture output delegate
@@ -119,7 +117,7 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 
 // delegate receives camera frames and processes them
 // this delegate will be set to different VCs based on different tasks that need to be done (pose detection, object detection, etc)
-protocol CameraViewControllerOutputDelegate: class {
+protocol CameraViewControllerOutputDelegate: AnyObject {
     func cameraViewController(_ controller: CameraViewController, didReceiveBuffer buffer: CMSampleBuffer, orientation: CGImagePropertyOrientation)
 }
 
